@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="SimpleSAMLphp AuthCrypt module ruleset">
+<ruleset name="SimpleSAMLphp module ruleset">
     <description>
         By default it is less stringent about long lines than other coding standards
     </description>
