@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace SimpleSAML\Test\Module\attributescope\Auth\Process;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use SimpleSAML\Configuration;
 use SimpleSAML\Module\attributescope\Auth\Process\FilterAttributes;
+use SimpleSAML\TestUtils\ClearStateTestCase;
 
-final class FilterAttributesTest extends TestCase
+final class FilterAttributesTest extends ClearStateTestCase
 {
     /**
      * Helper function to run the filter with a given configuration.
@@ -43,6 +44,7 @@ final class FilterAttributesTest extends TestCase
      * @param array<int, array<mixed>> $source The IDP source info
      * @dataProvider wrongScopeDataProvider
      */
+    #[DataProvider('wrongScopeDataProvider')]
     public function testWrongScope(array $source): void
     {
         $config = [
