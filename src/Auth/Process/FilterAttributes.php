@@ -70,6 +70,7 @@ class FilterAttributes extends Auth\ProcessingFilter
 
     private bool $ignoreCase = false;
 
+
     /**
      * Constructor
      *
@@ -95,6 +96,7 @@ class FilterAttributes extends Auth\ProcessingFilter
             $this->ignoreCase = $config['ignoreCase'];
         }
     }
+
 
     /**
      * Process the filter
@@ -130,7 +132,7 @@ class FilterAttributes extends Auth\ProcessingFilter
             if ($noscope) {
                 Logger::info(
                     'Attribute ' . $attributesWithScope .
-                    ' is filtered out due to missing scope information in IdP metadata.'
+                    ' is filtered out due to missing scope information in IdP metadata.',
                 );
                 unset($state['Attributes'][$attributesWithScope]);
                 continue;
@@ -156,12 +158,12 @@ class FilterAttributes extends Auth\ProcessingFilter
             if (array_key_exists($scopeAttribute, $state['Attributes'])) {
                 if (count($state['Attributes'][$scopeAttribute]) != 1) {
                     Logger::warning(
-                        '$scopeAttribute (' . $scopeAttribute . ') must be single valued. Filtering out.'
+                        '$scopeAttribute (' . $scopeAttribute . ') must be single valued. Filtering out.',
                     );
                     unset($state['Attributes'][$scopeAttribute]);
                 } elseif (!in_array($state['Attributes'][$scopeAttribute][0], $scopes)) {
                     Logger::warning(
-                        'Scope attribute (' . $scopeAttribute . ') does not match metadata. Filtering out.'
+                        'Scope attribute (' . $scopeAttribute . ') does not match metadata. Filtering out.',
                     );
                     unset($state['Attributes'][$scopeAttribute]);
                 }
@@ -175,7 +177,7 @@ class FilterAttributes extends Auth\ProcessingFilter
             if ($noscope) {
                 Logger::info(
                     'Attribute ' . $attributeWithSuffix .
-                    ' is filtered out due to missing scope information in IdP metadata.'
+                    ' is filtered out due to missing scope information in IdP metadata.',
                 );
                 unset($state['Attributes'][$attributeWithSuffix]);
                 continue;
@@ -198,6 +200,7 @@ class FilterAttributes extends Auth\ProcessingFilter
         }
     }
 
+
     /**
      * Determines whether an attribute value is properly scoped.
      *
@@ -217,6 +220,7 @@ class FilterAttributes extends Auth\ProcessingFilter
 
         return false;
     }
+
 
     /**
      * Determines whether an attribute value is properly suffixed with the scope.

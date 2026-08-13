@@ -25,6 +25,7 @@ final class FilterAttributesTest extends ClearStateTestCase
         return $request;
     }
 
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -34,7 +35,7 @@ final class FilterAttributesTest extends ClearStateTestCase
                 'logging.handler' => 'stderr',
             ],
             '[ARRAY]',
-            'simplesaml'
+            'simplesaml',
         );
         Configuration::setPreLoadedConfig($config, 'config.php');
     }
@@ -48,7 +49,7 @@ final class FilterAttributesTest extends ClearStateTestCase
     public function testWrongScope(array $source): void
     {
         $config = [
-            'attributesWithScopeSuffix' => ['sampleSuffixedAttribute']
+            'attributesWithScopeSuffix' => ['sampleSuffixedAttribute'],
         ];
         $request = [
             'Attributes' => [
@@ -65,6 +66,7 @@ final class FilterAttributesTest extends ClearStateTestCase
         $expectedData = ['nonScopedAttribute' => ['not-removed']];
         $this->assertEquals($expectedData, $attributes, "Only incorrectly scoped attributes should be removed");
     }
+
 
     /**
      * Provide data for the tests
@@ -100,7 +102,7 @@ final class FilterAttributesTest extends ClearStateTestCase
             'eduPersonPrincipalName' => ['joe@example.com'],
             'nonScopedAttribute' => ['not-removed'],
             'eduPersonScopedAffiliation' => ['student@example.com', 'staff@example.com'],
-            'schacHomeOrganization' => ['example.com']
+            'schacHomeOrganization' => ['example.com'],
         ];
         $config = [];
         $request = [
@@ -111,6 +113,7 @@ final class FilterAttributesTest extends ClearStateTestCase
         $attributes = $result['Attributes'];
         $this->assertEquals($expectedData, $attributes, "All attributes should survive");
     }
+
 
     /**
      * Provide data for the tests
@@ -126,6 +129,7 @@ final class FilterAttributesTest extends ClearStateTestCase
         ];
     }
 
+
     public function testIgnoreCaseInScope(): void
     {
         $config = [
@@ -138,8 +142,8 @@ final class FilterAttributesTest extends ClearStateTestCase
                 'sampleSuffixedAttribute' => ['joe@example.com', 'bob@EXAMPLE.COM', 'wrong@bad.com'],
             ],
             'Source' => [
-                'scope' => ['example.com']
-            ]
+                'scope' => ['example.com'],
+            ],
         ];
         $result = self::processFilter($config, $request);
         $attributes = $result['Attributes'];
@@ -149,6 +153,7 @@ final class FilterAttributesTest extends ClearStateTestCase
             ];
         $this->assertEquals($expectedData, $attributes, "Scope case is ignored.");
     }
+
 
     /**
      * Test correct scope when multi-valued attribute has some conforming and some non-conforming values
@@ -165,14 +170,14 @@ final class FilterAttributesTest extends ClearStateTestCase
                     'member@EXamPLE.com', // scope is case sensitive
                     'staff@other.com',
                     'member@a@example.com',
-                    '@example.com'
+                    '@example.com',
                 ],
                 // schacHomeOrganization is required to be single valued and gets filtered out if multi-valued
-                'schacHomeOrganization' => ['abc.com', 'example.com', 'other.com']
+                'schacHomeOrganization' => ['abc.com', 'example.com', 'other.com'],
             ],
             'Source' => [
                 'scope' => ['example.com'],
-                'entityid' => 'https://example.com/idp'
+                'entityid' => 'https://example.com/idp',
             ],
         ];
         $result = self::processFilter($config, $request);
@@ -184,6 +189,7 @@ final class FilterAttributesTest extends ClearStateTestCase
         $this->assertEquals($expectedData, $attributes, "Incorrectly scoped values should be removed");
     }
 
+
     /**
      * Test disabling scope check for specific entityIds
      */
@@ -193,19 +199,19 @@ final class FilterAttributesTest extends ClearStateTestCase
         $expectedData = [
             'nonScopedAttribute' => ['not-removed'],
             'eduPersonScopedAffiliation' => ['faculty@abc.com', 'student@example.com', 'staff@other.com'],
-            'schacHomeOrganization' => ['random.com']
+            'schacHomeOrganization' => ['random.com'],
         ];
         $request = [
             'Attributes' => $expectedData,
             'Source' => [
                 'scope' => ['example.com'],
-                'entityid' => 'https://example.com/idp'
-            ]
+                'entityid' => 'https://example.com/idp',
+            ],
         ];
 
         // Test with entity ID that does NOT match the Source
         $config = [
-            'ignoreCheckForEntities' => ['https://NOMATCH.com/idp']
+            'ignoreCheckForEntities' => ['https://NOMATCH.com/idp'],
         ];
         $result = self::processFilter($config, $request);
 
@@ -215,13 +221,14 @@ final class FilterAttributesTest extends ClearStateTestCase
 
         // Test with entity ID that does match the Source
         $config = [
-            'ignoreCheckForEntities' => ['https://example.com/idp']
+            'ignoreCheckForEntities' => ['https://example.com/idp'],
         ];
         $result = self::processFilter($config, $request);
 
         $attributes = $result['Attributes'];
         $this->assertEquals($expectedData, $attributes, "Scope check ignored");
     }
+
 
     /**
      * Test attributes values that need to end with the scope or some subdomain of the scope.
@@ -257,12 +264,12 @@ final class FilterAttributesTest extends ClearStateTestCase
             ],
             'Source' => [
                 'scope' => ['example.com'],
-                'entityid' => 'https://example.com/idp'
-            ]
+                'entityid' => 'https://example.com/idp',
+            ],
         ];
 
         $config = [
-            'attributesWithScopeSuffix' => ['department', 'email']
+            'attributesWithScopeSuffix' => ['department', 'email'],
         ];
         $result = self::processFilter($config, $request);
 
