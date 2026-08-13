@@ -8,16 +8,16 @@ use PHPUnit\Framework\TestCase;
 use SimpleSAML\Configuration;
 use SimpleSAML\Module\attributescope\Auth\Process\FilterAttributes;
 
-class FilterAttributesTest extends TestCase
+final class FilterAttributesTest extends TestCase
 {
     /**
      * Helper function to run the filter with a given configuration.
      *
-     * @param  array $config The filter configuration.
-     * @param  array $request The request state.
-     * @return array  The state array after processing.
+     * @param  array<mixed> $config The filter configuration.
+     * @param  array<mixed> $request The request state.
+     * @return array<mixed> The state array after processing.
      */
-    private static function processFilter(array $config, array $request)
+    private static function processFilter(array $config, array $request): array
     {
         $filter = new FilterAttributes($config, null);
         $filter->process($request);
@@ -26,15 +26,24 @@ class FilterAttributesTest extends TestCase
 
     protected function setUp(): void
     {
-        Configuration::loadFromArray([], '[ARRAY]', 'simplesaml');
+        parent::setUp();
+        $config = Configuration::loadFromArray(
+            [
+                'module.enable' => ['attributescope' => true],
+                'logging.handler' => 'stderr',
+            ],
+            '[ARRAY]',
+            'simplesaml'
+        );
+        Configuration::setPreLoadedConfig($config, 'config.php');
     }
 
     /**
      * Test scoped attributes don't match scope
-     * @param array $source The IDP source info
+     * @param array<int, array<mixed>> $source The IDP source info
      * @dataProvider wrongScopeDataProvider
      */
-    public function testWrongScope($source)
+    public function testWrongScope(array $source): void
     {
         $config = [
             'attributesWithScopeSuffix' => ['sampleSuffixedAttribute']
@@ -57,9 +66,9 @@ class FilterAttributesTest extends TestCase
 
     /**
      * Provide data for the tests
-     * @return array test cases with each subtest being array of arguments
+     * @return array<int, array<mixed>> test cases with each subtest being array of arguments
      */
-    public static function wrongScopeDataProvider()
+    public static function wrongScopeDataProvider(): array
     {
         return [
             // Empty Source
@@ -79,10 +88,11 @@ class FilterAttributesTest extends TestCase
 
     /**
      * Test correct scope
-     * @param array $source The IDP source info
+     * @param array<int, array<mixed>> $source The IDP source info
      * @dataProvider correctScopeDataProvider
      */
-    public function testCorrectScope($source)
+    #[DataProvider('correctScopeDataProvider')]
+    public function testCorrectScope(array $source): void
     {
         $expectedData = [
             'eduPersonPrincipalName' => ['joe@example.com'],
@@ -102,9 +112,9 @@ class FilterAttributesTest extends TestCase
 
     /**
      * Provide data for the tests
-     * @return array test cases with each subtest being array of arguments
+     * @return array<int, array<mixed>> test cases with each subtest being array of arguments
      */
-    public static function correctScopeDataProvider()
+    public static function correctScopeDataProvider(): array
     {
         return [
             // Correct scope
@@ -114,7 +124,7 @@ class FilterAttributesTest extends TestCase
         ];
     }
 
-    public function testIgnoreCaseInScope()
+    public function testIgnoreCaseInScope(): void
     {
         $config = [
             'attributesWithScopeSuffix' => ['sampleSuffixedAttribute'],
@@ -141,7 +151,7 @@ class FilterAttributesTest extends TestCase
     /**
      * Test correct scope when multi-valued attribute has some conforming and some non-conforming values
      */
-    public function testMixedMultivaluedAttributes()
+    public function testMixedMultivaluedAttributes(): void
     {
         $config = [];
         $request = [
@@ -175,7 +185,7 @@ class FilterAttributesTest extends TestCase
     /**
      * Test disabling scope check for specific entityIds
      */
-    public function testIgnoreSourceScope()
+    public function testIgnoreSourceScope(): void
     {
 
         $expectedData = [
@@ -197,6 +207,7 @@ class FilterAttributesTest extends TestCase
         ];
         $result = self::processFilter($config, $request);
 
+        /** @var array<string, array<int, string>> $attributes */
         $attributes = $result['Attributes'];
         $this->assertFalse(array_key_exists('schacHomeOrganization', $attributes), 'Scope check shouldn\t be ignored');
 
@@ -213,7 +224,7 @@ class FilterAttributesTest extends TestCase
     /**
      * Test attributes values that need to end with the scope or some subdomain of the scope.
      */
-    public function testAttributeSuffix()
+    public function testAttributeSuffix(): void
     {
 
         $request = [
